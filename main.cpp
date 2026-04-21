@@ -1,16 +1,54 @@
 #include <iostream>
+#include <map>
+#include <list>
+#include <functional>
 
-// TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+class Entity {
+    int health;
+    int x, y;
+    std::string name;
+    int level;
+
+public:
+    Entity(const std::string& name, int health, int x, int y, int level);
+    void heal(int amount);
+    void damage(int amount);
+    void move(int dx, int dy);
+    void levelUp();
+    void mostrarestado() const;
+    int getHealth() const;
+    int getX() const;
+    int getY() const;
+    int getLevel() const;
+};
+
+Entity::Entity(const std::string& name, int health, int x, int y, int level)
+    : name(name), health(health), x(x), y(y), level(level) {}
+
+void Entity::heal(int amount) {
+    health += amount;
+}
+
+void Entity::damage(int amount) {
+    health -= amount;
+}
+
+void Entity::move(int dx, int dy) {
+    x += dx;
+    y += dy;
+}
+
+void Entity::levelUp() {
+    level++;
+}
+
+void Entity::mostrarestado() const {
+    std::cout << "Entity: " << name
+              << "Salud: " << health
+              << "Pos: (" << x << "," << y << ")"
+              << "Nivel: " << level << std::endl;
+}
+
 int main() {
-    // TIP Press <shortcut actionId="RenameElement"/> when your caret is at the <b>lang</b> variable name to see how CLion can help you rename it.
-    auto lang = "C++";
-    std::cout << "Hello and welcome to " << lang << "!\n";
 
-    for (int i = 1; i <= 5; i++) {
-        // TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-        std::cout << "i = " << i << std::endl;
-    }
-
-    return 0;
-    // TIP See CLion help at <a href="https://www.jetbrains.com/help/clion/">jetbrains.com/help/clion/</a>. Also, you can try interactive lessons for CLion by selecting 'Help | Learn IDE Features' from the main menu.
 }
