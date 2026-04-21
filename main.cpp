@@ -131,7 +131,7 @@ void CommandCenter::registerMacro(
     const std::string& name,
     const std::list<std::pair<std::string, std::list<std::string>>>& steps)
 {
-    commands[name] = [this, steps](const std::list<std::string>&) {
+    commands[name] = [this, steps, name](const std::list<std::string>&) {
         std::cout << "\n--- Macro: " << name << " ---" << std::endl;
         for (auto it = steps.begin(); it != steps.end(); ++it) {
             const auto& cmdName = it->first;
@@ -141,7 +141,7 @@ void CommandCenter::registerMacro(
                 std::cout << "Macro error: comando '" << cmdName << "' no fue encontrado\n";
                 return;
             }
-            cmdIt->second(args);
+            execute(cmdName, args);
         }
         std::cout << "--- End of Macro ---\n" << std::endl;
     };
@@ -166,3 +166,88 @@ public:
         std::cout << "Move executed " << executionCount << " times\n";
     }
 };
+
+// Función libre
+void cmd_heal(Entity& e, const std::list<std::string>& args) {
+    if (args.size() != 1) throw std::runtime_error("se necesita un arg");
+    int amount = std::stoi(args.front());
+    e.heal(amount);
+}
+
+int main() {
+    std::cout << "Creando entidad------" << std::endl;
+    Entity hero("Heroe", 100, 0, 0, 1);
+    hero.mostrarestado();
+
+    CommandCenter center(hero);
+
+    // comando como función libre
+    center.registerCommand("heal", [&center, &hero](const std::list<std::string>& args) {
+        cmd_heal(hero, args);
+    });
+
+    // comando como lambda
+    center.registerCommand("damage", [&hero](const std::list<std::string>& args) {
+        if (args.size() != 1) throw std::runtime_error("damage needs 1 arg");
+        int dmg = std::stoi(args.front());
+        hero.damage(dmg);
+    });
+
+    // comando como functor
+    center.registerCommand("move", MoveCommand(hero));
+
+
+    center.registerCommand("levelup", [&hero](const std::list<std::string>&) {
+        hero.levelUp();
+    });
+
+    center.registerCommand("status", [&hero](const std::list<std::string>&) {
+        hero.mostrarestado();
+    });
+
+
+    std::cout << "\nEJECUTANDO COMANDOS------------" << std::endl;
+    center.execute("heal", {"30"});
+    center.execute("damage", {"20"});
+    center.execute("move", {"5", "3"});
+    center.execute("levelup", {});
+    center.execute("status", {});
+
+    std::cout << "\nTESTEO DE COMANDO INVALIDO" << std::endl;
+    center.execute("invalid", {});
+
+    std::cout << "\nREGISTRO DE MACROS-----------" << std::endl;
+
+    // Macro 1: Heal y status
+    center.registerMacro("quick_heal", {
+        {"heal", {"50"}},
+        {"status", {}}
+    });
+
+    // Macro 2: Movimiento y daño
+    center.registerMacro("attack_and_move", {
+        {"damage", {"15"}},
+        {"move", {"2", "1"}},
+        {"status", {}}
+    });
+
+    // Macro 3: Recuperación completa
+    center.registerMacro("full_recovery", {
+        {"heal", {"100"}},
+        {"levelup", {}},
+        {"status", {}}
+    });
+
+    // Ejecutar macros
+    std::cout << "\nEJECUCION DE MACROS" << std::endl;
+    center.executeMacro("quick_heal");
+    center.executeMacro("attack_and_move");
+    center.executeMacro("full_recovery");
+    center.showHistory();
+
+    std::cout << "\nTESTEO PARA REMOVER LOS COMANDOS" << std::endl;
+    center.unregisterCommand("levelup");
+    std::cout << "\nESTADO FINAL DEL SISTEMA -------------\n";
+    hero.mostrarestado();
+    return 0;
+}
