@@ -32,12 +32,12 @@ Entity::Entity(const std::string& nombre, int salud, int x, int y, int level)
 
 void Entity::heal(int amount) {
     salud += amount;
-    std::cout << "Healed by " << amount << ". New salud: " << salud << std::endl;
+    std::cout << "curado por " << amount << " salud actual: " << salud << std::endl;
 }
 
 void Entity::damage(int amount) {
     salud -= amount;
-    std::cout << "Damaged by " << amount << ". New salud: " << salud << std::endl;
+    std::cout << "dañado por " << amount << " salud actual: " << salud << std::endl;
 }
 
 void Entity::move(int dx, int dy) {
@@ -48,7 +48,7 @@ void Entity::move(int dx, int dy) {
 
 void Entity::levelUp() {
     level++;
-    std::cout << "Level up! Now level " << level << std::endl;
+    std::cout << "Level up! Nuevo nivel: " << level << std::endl;
 }
 
 void Entity::mostrarestado() const {
@@ -105,7 +105,7 @@ void CommandCenter::execute(const std::string& name, const std::list<std::string
         try {
             it->second(args);
         } catch (const std::exception& e) {
-            std::cout << "Error executing command: " << e.what() << std::endl;
+            std::cout << "Error de ejecucion de comando: " << e.what() << std::endl;
             return;
         }
 
@@ -143,9 +143,9 @@ void CommandCenter::registerMacro(
             }
             execute(cmdName, args);
         }
-        std::cout << "--- End of Macro ---\n" << std::endl;
+        std::cout << "--- Fin del macro ---\n" << std::endl;
     };
-    std::cout << "Macro '" << name << "' registered.\n";
+    std::cout << "Macro '" << name << "' registrado\n";
 }
 
 void CommandCenter::executeMacro(const std::string& name) {
